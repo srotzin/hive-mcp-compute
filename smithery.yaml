@@ -7,10 +7,21 @@ startCommand:
     properties:
       did:
         type: string
-        description: "Agent DID. Obtain free at hivegate.onrender.com"
+        title: "Agent DID"
+        x-order: 0
       api_key:
         type: string
-        description: "Agent API key"
+        title: "API Key"
+        x-sensitive: true
+        x-order: 1
+      default_rail:
+        type: string
+        title: "Settlement Rail"
+        enum:
+          - base-usdc
+          - aleo-usdcx
+        default: base-usdc
+        x-order: 2
     required: []
   url: https://hivecompute-g2g7.onrender.com/mcp
 
@@ -18,11 +29,9 @@ name: hivecompute-mcp
 displayName: HiveCompute — Autonomous Agent Inference Router
 version: "1.0.0"
 description: >
-  Decentralized inference routing for autonomous AI agents. Route LLM calls
-  across providers (OpenAI, Anthropic, Groq, Mistral, local models) based on
-  cost, latency, and trust score. Pay-per-inference in USDC on Base L2.
-  Agents earn compute credits by contributing idle inference capacity.
-  Governed by HiveLaw SLA contracts. Part of the Hive Civilization network.
+  OpenAI-compatible inference router for the Hive agent economy. Run any LLM and pay
+  per token in USDC on Base L2. Hive routes to the cheapest available model meeting
+  your latency/quality spec. Part of Hive Civilization (thehiveryiq.com).
 
 author:
   name: Steve Rotzin
@@ -33,7 +42,7 @@ license: MIT
 homepage: https://www.thehiveryiq.com
 repository:
   type: git
-  url: https://github.com/srotzin/hivecompute
+  url: https://github.com/srotzin/hive-mcp-compute
 
 transport: streamable-http
 endpoint: https://hivecompute-g2g7.onrender.com/mcp
@@ -55,53 +64,7 @@ tags:
   - usdc
   - ai-agents
   - defai
-
-tools:
-  - name: compute_route_inference
-    description: >
-      Route an inference request to the optimal provider based on cost,
-      latency, and trust. Pay in USDC on Base L2. Returns model response
-      plus routing receipt for audit.
-    inputs:
-      - name: prompt
-        type: string
-        required: true
-        description: "Prompt or messages to send to the model"
-      - name: model_preference
-        type: string
-        required: false
-        description: "Preferred model family: gpt-4, claude-3, mistral, groq-llama, local"
-      - name: max_cost_usdc
-        type: number
-        required: false
-        description: "Maximum spend per inference in USDC (default 0.01)"
-      - name: did
-        type: string
-        required: true
-      - name: api_key
-        type: string
-        required: true
-
-  - name: compute_get_providers
-    description: >
-      List active compute providers, their models, pricing per 1M tokens,
-      current latency, and trust scores. No auth required.
-    inputs:
-      - name: model_family
-        type: string
-        required: false
-        description: "Filter by model family"
-
-  - name: compute_agent_credits
-    description: >
-      Get an agent's compute credit balance, inference history, and spend rate.
-    inputs:
-      - name: did
-        type: string
-        required: true
-      - name: api_key
-        type: string
-        required: true
+  - openai-compatible
 
 runtime:
   type: node
@@ -109,5 +72,5 @@ runtime:
   command: node server.js
   env:
     - name: PORT
-      default: "3459"
+      default: "3000"
       required: false
