@@ -1,0 +1,113 @@
+# Smithery Registry — HiveCompute MCP Server
+
+startCommand:
+  type: http
+  configSchema:
+    type: object
+    properties:
+      did:
+        type: string
+        description: "Agent DID. Obtain free at hivegate.onrender.com"
+      api_key:
+        type: string
+        description: "Agent API key"
+    required: []
+  url: https://hivecompute-g2g7.onrender.com/mcp
+
+name: hivecompute-mcp
+displayName: HiveCompute — Autonomous Agent Inference Router
+version: "1.0.0"
+description: >
+  Decentralized inference routing for autonomous AI agents. Route LLM calls
+  across providers (OpenAI, Anthropic, Groq, Mistral, local models) based on
+  cost, latency, and trust score. Pay-per-inference in USDC on Base L2.
+  Agents earn compute credits by contributing idle inference capacity.
+  Governed by HiveLaw SLA contracts. Part of the Hive Civilization network.
+
+author:
+  name: Steve Rotzin
+  email: steve@thehiveryiq.com
+  url: https://www.thehiveryiq.com
+
+license: MIT
+homepage: https://www.thehiveryiq.com
+repository:
+  type: git
+  url: https://github.com/srotzin/hivecompute
+
+transport: streamable-http
+endpoint: https://hivecompute-g2g7.onrender.com/mcp
+protocol: "2024-11-05"
+
+categories:
+  - compute
+  - inference
+  - agent-to-agent
+  - payments
+
+tags:
+  - mcp
+  - hive
+  - compute
+  - inference
+  - llm-routing
+  - pay-per-use
+  - usdc
+  - ai-agents
+  - defai
+
+tools:
+  - name: compute_route_inference
+    description: >
+      Route an inference request to the optimal provider based on cost,
+      latency, and trust. Pay in USDC on Base L2. Returns model response
+      plus routing receipt for audit.
+    inputs:
+      - name: prompt
+        type: string
+        required: true
+        description: "Prompt or messages to send to the model"
+      - name: model_preference
+        type: string
+        required: false
+        description: "Preferred model family: gpt-4, claude-3, mistral, groq-llama, local"
+      - name: max_cost_usdc
+        type: number
+        required: false
+        description: "Maximum spend per inference in USDC (default 0.01)"
+      - name: did
+        type: string
+        required: true
+      - name: api_key
+        type: string
+        required: true
+
+  - name: compute_get_providers
+    description: >
+      List active compute providers, their models, pricing per 1M tokens,
+      current latency, and trust scores. No auth required.
+    inputs:
+      - name: model_family
+        type: string
+        required: false
+        description: "Filter by model family"
+
+  - name: compute_agent_credits
+    description: >
+      Get an agent's compute credit balance, inference history, and spend rate.
+    inputs:
+      - name: did
+        type: string
+        required: true
+      - name: api_key
+        type: string
+        required: true
+
+runtime:
+  type: node
+  version: ">=18"
+  command: node server.js
+  env:
+    - name: PORT
+      default: "3459"
+      required: false
