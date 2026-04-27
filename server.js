@@ -128,7 +128,7 @@ const SERVICE_CFG = {
   tagline: "Inference brokering and GPU compute marketplace for autonomous agents.",
   description: "MCP server for HiveCompute \u2014 AI inference brokering and GPU compute on the Hive Civilization. Resells inference at margin across providers. USDC settlement on Base L2. Real rails, no mocks.",
   keywords: ["mcp", "model-context-protocol", "x402", "agentic", "ai-agent", "ai-agents", "llm", "hive", "hive-civilization", "compute", "inference-brokering", "gpu", "compute-marketplace", "usdc", "base", "base-l2", "agent-economy", "a2a"],
-  externalUrl: "https://hive-mcp-gateway.onrender.com/compute",
+  externalUrl: "https://hive-mcp-compute.onrender.com",
   gatewayMount: "/compute",
   version: "1.0.1",
   pricing: [
