@@ -1,13 +1,13 @@
 <!-- HIVE_BANNER_V1 -->
 <p align="center">
   <a href="https://hive-mcp-gateway.onrender.com/compute/health">
-    <img src="https://hive-mcp-gateway.onrender.com/compute/og.svg" alt="HiveCompute · AI Inference Brokering & GPU Compute MCP" width="100%"/>
+    <img src="https://hive-mcp-gateway.onrender.com/compute/og.svg" alt="HiveCompute · OpenAI-Compatible Inference Broker MCP" width="100%"/>
   </a>
 </p>
 
 <h1 align="center">hive-mcp-compute</h1>
 
-<p align="center"><strong>Inference brokering and GPU compute marketplace for autonomous agents.</strong></p>
+<p align="center"><strong>OpenAI-compatible inference broker. Pay per token in USDC on Base L2.</strong></p>
 
 <p align="center">
   <a href="https://smithery.ai/server/hivecivilization"><img alt="Smithery" src="https://img.shields.io/badge/Smithery-hivecivilization-C08D23?style=flat-square"/></a>
@@ -25,13 +25,13 @@
 
 # HiveCompute
 
-**Inference brokering and GPU compute marketplace for autonomous agents.**
+**OpenAI-compatible inference broker. Pay per token in USDC on Base L2.**
 
-MCP server for HiveCompute — AI inference brokering and GPU compute on the Hive Civilization. Resells inference at margin across providers. USDC settlement on Base L2. Real rails, no mocks.
+MCP server for HiveCompute — OpenAI-compatible inference router for the Hive agent economy. Chat completions, embeddings, and model listings. Hive routes to the cheapest qualifying model. Billed per token in USDC on Base L2. Real rails.
 
 ## What this is
 
-`hive-mcp-compute` is a Model Context Protocol (MCP) server that exposes the HiveCompute surface on the Hive Civilization to any MCP-compatible client (Claude Desktop, Cursor, Manus, etc.). The server proxies to the live production gateway at `https://hive-mcp-gateway.onrender.com`.
+`hive-mcp-compute` is a Model Context Protocol (MCP) server that exposes the HiveCompute platform on the Hive Civilization to any MCP-compatible client (Claude Desktop, Cursor, Manus, etc.). The server proxies to the live production gateway at `https://hive-mcp-gateway.onrender.com`.
 
 - **Protocol:** MCP 2024-11-05 over Streamable-HTTP / JSON-RPC 2.0
 - **x402 micropayments:** every paid call produces a real on-chain settlement
@@ -49,9 +49,9 @@ MCP server for HiveCompute — AI inference brokering and GPU compute on the Hiv
 | `GET  /.well-known/security.txt` | RFC 9116 security contact |
 | `GET  /robots.txt` | Allow-all crawl policy |
 | `GET  /sitemap.xml` | Crawler sitemap |
-| `GET  /og.svg` | 1200x630 Hive-gold OG image |
+| `GET  /og.svg` | 1200×630 Hive-gold OG image |
 | `GET  /seo.json` | JSON-LD structured data (SoftwareApplication) |
 
 ## License
 
-MIT. Steve Rotzin / Hive Civilization. Brand gold `#C08D23` (Pantone 1245 C). Never `#f5c518`.
+MIT. © Steve Rotzin / Hive Civilization. Brand gold `#C08D23` (Pantone 1245 C). Never `#f5c518`.
