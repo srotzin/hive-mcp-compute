@@ -1,6 +1,6 @@
 {
   "name": "hive-mcp-compute",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "type": "module",
   "main": "server.js",
   "scripts": {
@@ -9,5 +9,33 @@
   "dependencies": {
     "cors": "^2.8.5",
     "express": "^4.18.2"
-  }
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "x402",
+    "agentic",
+    "ai-agent",
+    "ai-agents",
+    "llm",
+    "hive",
+    "hive-civilization",
+    "compute",
+    "inference-brokering",
+    "gpu",
+    "compute-marketplace",
+    "usdc",
+    "base",
+    "base-l2",
+    "agent-economy",
+    "a2a"
+  ],
+  "description": "MCP server for HiveCompute \u2014 AI inference brokering and GPU compute on the Hive Civilization. Resells inference at margin across providers. USDC settlement on Base L2. Real rails, no mocks.",
+  "homepage": "https://hive-mcp-gateway.onrender.com/compute",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/srotzin/hive-mcp-compute"
+  },
+  "author": "Steve Rotzin <steve@thehiveryiq.com> (https://www.thehiveryiq.com)",
+  "license": "MIT"
 }

@@ -1,6 +1,7 @@
 // server.js — HiveCompute MCP Server
 import express from 'express';
 import cors from 'cors';
+import { renderLanding, renderRobots, renderSitemap, renderSecurity, renderOgImage, seoJson, BRAND_GOLD } from './meta.js';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -119,6 +120,24 @@ const MCP_TOOLS = [
   },
 ];
 
+
+const SERVICE_CFG = {
+  service: "hive-mcp-compute",
+  shortName: "HiveCompute",
+  title: "HiveCompute \u00b7 AI Inference Brokering & GPU Compute MCP",
+  tagline: "Inference brokering and GPU compute marketplace for autonomous agents.",
+  description: "MCP server for HiveCompute \u2014 AI inference brokering and GPU compute on the Hive Civilization. Resells inference at margin across providers. USDC settlement on Base L2. Real rails, no mocks.",
+  keywords: ["mcp", "model-context-protocol", "x402", "agentic", "ai-agent", "ai-agents", "llm", "hive", "hive-civilization", "compute", "inference-brokering", "gpu", "compute-marketplace", "usdc", "base", "base-l2", "agent-economy", "a2a"],
+  externalUrl: "https://hive-mcp-gateway.onrender.com/compute",
+  gatewayMount: "/compute",
+  version: "1.0.1",
+  pricing: [
+    { name: "compute_quote", priceUsd: 0, label: "Quote \u2014 free" },
+    { name: "compute_inference", priceUsd: 0.005, label: "Inference (Tier 2)" },
+    { name: "compute_book_gpu", priceUsd: 0.05, label: "Book GPU (Tier 3)" }
+  ],
+};
+SERVICE_CFG.tools = (typeof MCP_TOOLS !== 'undefined' ? MCP_TOOLS : []).map(t => ({ name: t.name, description: t.description }));
 // ─── MCP Prompts ────────────────────────────────────────────────────────────
 const MCP_PROMPTS = [
   {
@@ -314,6 +333,24 @@ app.get('/.well-known/mcp.json', (req, res) => res.json({
   prompts: MCP_PROMPTS.map(p => ({ name: p.name, description: p.description })),
 }));
 
+
+// HIVE_META_BLOCK_v1 — comprehensive meta tags + JSON-LD + crawler discovery
+app.get('/', (req, res) => {
+  res.type('text/html; charset=utf-8').send(renderLanding(SERVICE_CFG));
+});
+app.get('/og.svg', (req, res) => {
+  res.type('image/svg+xml').send(renderOgImage(SERVICE_CFG));
+});
+app.get('/robots.txt', (req, res) => {
+  res.type('text/plain').send(renderRobots(SERVICE_CFG));
+});
+app.get('/sitemap.xml', (req, res) => {
+  res.type('application/xml').send(renderSitemap(SERVICE_CFG));
+});
+app.get('/.well-known/security.txt', (req, res) => {
+  res.type('text/plain').send(renderSecurity());
+});
+app.get('/seo.json', (req, res) => res.json(seoJson(SERVICE_CFG)));
 app.use((req, res) => {
   res.status(404).json({
     status: 'error',
