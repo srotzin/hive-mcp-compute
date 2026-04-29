@@ -425,25 +425,6 @@ const AP2 = {
 app.get('/.well-known/agent-card.json', (req, res) => res.json(AGENT_CARD));
 app.get('/.well-known/ap2.json',         (req, res) => res.json(AP2));
 
-app.use((req, res) => {
-  res.status(404).json({
-    status: 'error',
-    error: 'NOT_FOUND',
-    detail: `Route ${req.method} ${req.path} not found`,
-    available: ['GET /health', 'POST /mcp', 'GET /.well-known/mcp.json'],
-  });
-});
-
-
-
-app.listen(PORT, '0.0.0.0', () => {
-  console.log(`[hivecompute-mcp] Running on port ${PORT}`);
-  console.log(`[hivecompute-mcp] MCP endpoint: http://localhost:${PORT}/mcp`);
-  console.log(`[hivecompute-mcp] Proxying to: ${BASE_URL}`);
-});
-
-export default app;
-
 // ─── Wave B: compute marketplace match fee + subscription tiers ──────────────
 // Doctrine review: hive-mcp-compute is a shim over hivecompute inference router.
 // Hive routes to cheapest available model — matching buyers (agents) to
@@ -549,3 +530,21 @@ app.post('/v1/match-fee/estimate', (req, res) => {
   });
 });
 // ─────────────────────────────────────────────────────────────────────────────
+
+app.use((req, res) => {
+  res.status(404).json({
+    status: 'error',
+    error: 'NOT_FOUND',
+    detail: `Route ${req.method} ${req.path} not found`,
+    available: ['GET /health', 'POST /mcp', 'POST /v1/subscription', 'GET /v1/subscription/:did', 'POST /v1/match-fee/estimate', 'GET /.well-known/mcp.json'],
+  });
+});
+
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`[hivecompute-mcp] Running on port ${PORT}`);
+  console.log(`[hivecompute-mcp] MCP endpoint: http://localhost:${PORT}/mcp`);
+  console.log(`[hivecompute-mcp] Proxying to: ${BASE_URL}`);
+  console.log(`[hivecompute-mcp] Revenue: 5% match fee · sub tiers $25/$99/$499`);
+});
+
+export default app;
