@@ -443,3 +443,109 @@ app.listen(PORT, '0.0.0.0', () => {
 });
 
 export default app;
+
+// ─── Wave B: compute marketplace match fee + subscription tiers ──────────────
+// Doctrine review: hive-mcp-compute is a shim over hivecompute inference router.
+// Hive routes to cheapest available model — matching buyers (agents) to
+// providers (Akash, io.net, Render). Hive does NOT run compute itself.
+// Match fee (5% of job value) is partner-shaped: Hive matches, providers serve.
+// Doctrine-CLEAN.
+//
+// Tier schedule (Monroe W1 on Base USDC):
+//   Per-job match fee: 5% of inference job value
+//   Starter sub  : $25/mo  — 1M tokens/day cap
+//   Pro sub      : $99/mo  — 10M tokens/day cap
+//   Enterprise   : $499/mo — unlimited + priority routing + SLA attestation
+//
+// Spectral receipt on every metered job.
+
+const _CMP_TREASURY = '0x15184bf50b3d3f52b60434f8942b7d52f2eb436e';
+const _CMP_BRAND    = '#C08D23';
+const _CMP_MATCH_FEE_BPS = 500; // 5% on compute jobs
+const _CMP_TIERS = {
+  starter:    { price_usd: 25,  label: 'Starter',    tokens_per_day: 1_000_000 },
+  pro:        { price_usd: 99,  label: 'Pro',         tokens_per_day: 10_000_000 },
+  enterprise: { price_usd: 499, label: 'Enterprise',  tokens_per_day: Infinity, invoice: true,
+    perks: ['priority_routing', 'sla_attestation', 'dedicated_model_slots'] },
+};
+const _cmpSubLedger = new Map();
+
+async function _cmpEmitReceipt({ event_type, did, amount_usd, tx_hash, metadata }) {
+  try {
+    const ctrl = new AbortController();
+    setTimeout(() => ctrl.abort(), 4000);
+    await fetch('https://hive-receipt.onrender.com/v1/receipt/sign', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        issuer_did: 'did:hive:compute-mcp',
+        recipient_did: did || 'did:hive:anonymous',
+        event_type, amount_usd: String(amount_usd),
+        currency: 'USDC', network: 'base', pay_to: _CMP_TREASURY,
+        tx_hash: tx_hash || null, service: 'hive-mcp-compute', brand: _CMP_BRAND,
+        issued_ms: Date.now(), ...metadata,
+      }),
+      signal: ctrl.signal,
+    });
+  } catch (_) { console.warn('[compute-mcp] receipt emit failed (non-fatal):', _.message); }
+}
+
+// POST /v1/subscription — compute subscription tiers
+app.post('/v1/subscription', async (req, res) => {
+  const { tier, did, tx_hash } = req.body || {};
+  if (!tier || !_CMP_TIERS[tier]) {
+    return res.status(400).json({ error: 'invalid_tier', valid_tiers: Object.keys(_CMP_TIERS), brand: _CMP_BRAND });
+  }
+  const t = _CMP_TIERS[tier];
+  if (!did) return res.status(400).json({ error: 'did_required' });
+  if (tier !== 'enterprise' && !tx_hash) {
+    return res.status(402).json({
+      error: 'payment_required',
+      x402: { type: 'x402', version: '1', kind: 'subscription_compute',
+        asking_usd: t.price_usd, accept_min_usd: t.price_usd,
+        asset: 'USDC', asset_address: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913',
+        network: 'base', pay_to: _CMP_TREASURY, nonce: Math.random().toString(36).slice(2),
+        issued_ms: Date.now(), tier, label: t.label,
+        match_fee_bps: _CMP_MATCH_FEE_BPS,
+        note: `Hive routes compute jobs to Akash/io.net/Render. 5% match fee on job value. ${t.price_usd}/mo subscription.`,
+        partner_doctrine: 'Hive matches; providers run compute. Partner-shaped (Akash, io.net, Render).',
+      },
+      note: `Submit tx_hash for $${t.price_usd} USDC/mo to ${_CMP_TREASURY} on Base.`,
+    });
+  }
+  const record = {
+    tier, did, tx_hash: tx_hash || 'enterprise_invoice',
+    activated_ms: Date.now(), expires_ms: Date.now() + 30 * 24 * 3600 * 1000,
+    price_usd: t.price_usd, tokens_per_day: t.tokens_per_day,
+    match_fee_bps: _CMP_MATCH_FEE_BPS,
+  };
+  _cmpSubLedger.set(did, record);
+  await _cmpEmitReceipt({ event_type: 'subscription_activated', did, amount_usd: t.price_usd, tx_hash, metadata: { tier } });
+  return res.json({ ok: true, subscription: record, receipt_emitted: true,
+    match_fee_bps: _CMP_MATCH_FEE_BPS, brand: _CMP_BRAND });
+});
+
+// GET /v1/subscription/:did
+app.get('/v1/subscription/:did', (req, res) => {
+  const r = _cmpSubLedger.get(req.params.did);
+  if (!r) return res.status(404).json({ active: false, did: req.params.did });
+  return res.json({ active: Date.now() < r.expires_ms, ...r });
+});
+
+// POST /v1/match-fee/estimate — estimate match fee for a compute job
+app.post('/v1/match-fee/estimate', (req, res) => {
+  const { job_value_usdc, model, token_count } = req.body || {};
+  const base = Number(job_value_usdc) || (Number(token_count || 1000) / 1_000_000 * 5.00);
+  const fee  = +(base * _CMP_MATCH_FEE_BPS / 10000).toFixed(6);
+  return res.json({
+    job_value_usdc: base,
+    match_fee_bps: _CMP_MATCH_FEE_BPS,
+    match_fee_usdc: fee,
+    net_to_provider: +(base - fee).toFixed(6),
+    model: model || 'auto',
+    partner_providers: ['Akash Network', 'io.net', 'Render GPU'],
+    note: 'Hive matches and routes. Providers run the compute. Doctrine-clean.',
+    brand: _CMP_BRAND,
+  });
+});
+// ─────────────────────────────────────────────────────────────────────────────
