@@ -364,7 +364,7 @@ app.use((req, res) => {
 // ─── Schema discoverability ────────────────────────────────────────────────
 const AGENT_CARD = {
   name: SERVICE,
-  description: `MCP server for HiveCompute — OpenAI-compatible inference router for the Hive agent economy. Chat completions, embeddings, and model listings. Hive routes to the cheapest qualifying model. Billed per token in USDC on Base L2. Real rails.. New agents: first call free. Loyalty: every 6th paid call is free. Pay in USDC on Base L2.`,
+  description: 'MCP server for HiveCompute — OpenAI-compatible inference router for the Hive agent economy. Chat completions, embeddings, and model listings. Hive routes to the cheapest qualifying model. Billed per token in USDC on Base L2. Real rails.. New agents: first call free. Loyalty: every 6th paid call is free. Pay in USDC on Base L2.',
   url: `https://${SERVICE}.onrender.com`,
   provider: {
     organization: 'Hive Civilization',
@@ -407,7 +407,7 @@ const AP2 = {
   agent: {
     name: SERVICE,
     did: `did:web:${SERVICE}.onrender.com`,
-    description: `MCP server for HiveCompute — OpenAI-compatible inference router for the Hive agent economy. Chat completions, embeddings, and model listings. Hive routes to the cheapest qualifying model. Billed per token in USDC on Base L2. Real rails.. New agents: first call free. Loyalty: every 6th paid call is free. Pay in USDC on Base L2.`,
+    description: 'MCP server for HiveCompute — OpenAI-compatible inference router for the Hive agent economy. Chat completions, embeddings, and model listings. Hive routes to the cheapest qualifying model. Billed per token in USDC on Base L2. Real rails.. New agents: first call free. Loyalty: every 6th paid call is free. Pay in USDC on Base L2.',
   },
   endpoints: {
     mcp: `https://${SERVICE}.onrender.com/mcp`,
@@ -427,7 +427,7 @@ const AP2 = {
 };
 
 app.get('/.well-known/agent-card.json', (req, res) => res.json(AGENT_CARD));
-app.get('/.well-known/ap2.json', (req, res) => res.json(AP2));
+app.get('/.well-known/ap2.json',         (req, res) => res.json(AP2));
 
 
 app.listen(PORT, '0.0.0.0', () => {
