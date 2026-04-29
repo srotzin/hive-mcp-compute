@@ -351,16 +351,6 @@ app.get('/.well-known/security.txt', (req, res) => {
   res.type('text/plain').send(renderSecurity());
 });
 app.get('/seo.json', (req, res) => res.json(seoJson(SERVICE_CFG)));
-app.use((req, res) => {
-  res.status(404).json({
-    status: 'error',
-    error: 'NOT_FOUND',
-    detail: `Route ${req.method} ${req.path} not found`,
-    available: ['GET /health', 'POST /mcp', 'GET /.well-known/mcp.json'],
-  });
-});
-
-
 // ─── Schema constants (auto-injected to fix deploy) ─────
 const SERVICE = 'hive-mcp-compute';
 const VERSION = '1.0.1';
@@ -434,6 +424,16 @@ const AP2 = {
 
 app.get('/.well-known/agent-card.json', (req, res) => res.json(AGENT_CARD));
 app.get('/.well-known/ap2.json',         (req, res) => res.json(AP2));
+
+app.use((req, res) => {
+  res.status(404).json({
+    status: 'error',
+    error: 'NOT_FOUND',
+    detail: `Route ${req.method} ${req.path} not found`,
+    available: ['GET /health', 'POST /mcp', 'GET /.well-known/mcp.json'],
+  });
+});
+
 
 
 app.listen(PORT, '0.0.0.0', () => {
