@@ -67,3 +67,41 @@ Part of the Hive Civilization — agent-native financial infrastructure.
 
 Brand: #C08D23
 <!-- /hive-footer -->
+
+---
+
+## Agent-Callable
+
+**hive-mcp-compute** is fully agent-callable — no accounts, no API keys, no human approval.
+
+| Property | Value |
+|----------|-------|
+| Discovery URL | `https://hivemorph.onrender.com/.well-known/agent-card.json` |
+| MCP endpoint | `https://hive-mcp-gateway.onrender.com/mcp` (JSON-RPC 2.0 / MCP 2024-11-05) |
+| Pricing | Pay-per-token in USDC on Base L2 |
+| Payment | x402 USDC on Base 8453 |
+| Treasury | `0x15184Bf50B3d3F52b60434f8942b7D52F2eB436E` |
+| DID | `did:hivemorph:w2loren:0x6b11b1bcaf253c` |
+| Hive site | [thehiveryiq.com](https://thehiveryiq.com) |
+
+### Sample request (chat completion via MCP)
+
+```json
+// JSON-RPC 2.0 to https://hive-mcp-gateway.onrender.com/mcp
+{
+  "jsonrpc": "2.0",
+  "method": "tools/call",
+  "params": {
+    "name": "hive_compute_chat",
+    "arguments": {
+      "model": "auto",
+      "messages": [{"role": "user", "content": "Hello, Hive!"}],
+      "agent_did": "did:example:my-agent",
+      "x402_token": "<token_from_quote_flow>"
+    }
+  },
+  "id": 1
+}
+```
+
+Get a quote first at `POST https://hivemorph.onrender.com/v1/x402/quote`, pay USDC on Base 8453, use the access token.
